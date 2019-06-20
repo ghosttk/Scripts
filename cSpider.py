@@ -11,10 +11,10 @@ class Spider:
         parser.add_argument('-e', '--end', help='end endpoint')
         parser.add_argument('-i', '--id', help='book id')
         args = parser.parse_args()
-        self.baseUrl = args.url
-        self.startPoint = args.start
+        self.baseUrl = args.url or 'http://www.sixqing.com'
+        self.startPoint = args.start 
         self.endPoint = args.end
-        self.bookId = args.id
+        self.bookId = args.id or '40399'
     def scrapById(self):
         self.bookUrl = self.baseUrl + '/' + self.bookId + '/'
         page=requests.get(self.bookUrl)
@@ -29,18 +29,20 @@ class Spider:
         html=page.text
         selector=etree.HTML(html)
         content = selector.xpath('//div[@id="chaptercontent"]/p/text()')
-        print(dir(content))
         if content:
-            print(content)
-        '''
-        f = open(self.bookId + '.txt', 'a')
-        f.write(content[0])
-        f.close()
-        '''
+            if url != self.bookUrl:
+                f = open(self.bookId + '.txt', 'a', encoding='utf-8')
+                chapterId = url.split('/')[-1]
+                f.write(chapterId + '\n')
+            for c in content:
+                f = open(self.bookId + '.txt', 'a', encoding='utf-8')
+                f.write(c)
+                f.close()
         nextUrl =selector.xpath('//a[@class="a4"]/@href')
-        if nextUrl:
-            self.nextUrl = self.baseUrl + nextUrl[0] +'.html'
-            return self.nextUrl
+        if nextUrl and nextUrl !=self.bookUrl:
+            nextUrl = self.baseUrl + nextUrl[0] 
+            self.nextChapter(nextUrl)
+        return 
     def __init__(self):
         self.parseArgs()
 
