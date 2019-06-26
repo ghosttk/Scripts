@@ -1,8 +1,15 @@
 var Crawler = require("crawler");
 var fs = require('fs');
 
-var ifrom = 4904;
-var ito = 5400;
+var file = "zolConfig.json"
+var config = JSON.parse(fs.readFileSync(file));
+console.log(config)
+/*
+var ifrom = process.argv[2];//5400
+var ito = process.argv[3] ;//5500;
+*/
+var ifrom = config.iStart
+var ito = config.iEnd
 var fileStream = ifrom+'-'+ito+'.txt';
 var c = new Crawler({
     //rateLimit: 1000, // `maxConnections` will be forced to 1
@@ -12,7 +19,7 @@ var c = new Crawler({
     if(err){
         return console.log(err);
     }else {
-        console.log("追加成功");
+        console.log(article);
     }
 
 });
