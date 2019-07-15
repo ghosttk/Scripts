@@ -1,24 +1,25 @@
 <?php
 require_once 'vendor/autoload.php';
-
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\DomCrawler\Crawler;
 
 $finder = new Finder();
 $finder->in(__DIR__);
 
-use Symfony\Component\DomCrawler\Crawler;
 
 main();
 function main(){
 	$html = curl_get_https('https://www.zhiliti.com.cn/html/jizhuanwan/');
 	$crawler = new Crawler($html);
 	$article = $crawler->filterXPath('//ul/li');
-	$title = $article->filterXPath('//h2/a');
-	$answer = $article->filterXPath('//span');
-	var_dump($answer);
-	foreach ($answer as $crw) {
-	    var_dump($crw);
+	$titles = $article->filterXPath('//h2/a')->extract(array('_text'));
+	$answers = $article->filterXPath('//span')->extract(array('onclick'));
+	$result = array();
+	foreach($titles as $key=>$value){
+		$line = $titles[$key].$answers[$key];
+	    	array_push($result, $line);	
 	}
+	var_dump($result);
 }
 
 function curl_get_https($url)
